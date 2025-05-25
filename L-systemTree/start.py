@@ -50,6 +50,7 @@ def on_start():
             angle_variation=values["angle_variation"],
             branch_deletion_chance=values["branch_deletion_chance"]  
         )
+        root.destroy()
     except ValueError as e:
         messagebox.showerror("Error", str(e))
 

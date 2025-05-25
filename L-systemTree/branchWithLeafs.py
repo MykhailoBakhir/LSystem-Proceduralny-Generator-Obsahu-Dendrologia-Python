@@ -1,7 +1,7 @@
 import trimesh
 import numpy as np
 
-import test_leaf
+import leaf
 
 def create_frustum_branch(start, direction, length, bottom_radius, top_radius):
     # start = start -  direction;
@@ -128,8 +128,8 @@ def interpret_lsystem_Branch(lsys_string, start, direction, length, initial_radi
                     'C': 'FFFC'
                 }
                 if current_radius < 1:
-                    leaf_lsystem = test_leaf.expand_lsystem(leaf_axiom, leaf_rules, iterations=6)
-                    leaf_mesh = test_leaf.create_leaf_geometry(leaf_lsystem, angle_deg=16, step_length=length/8)
+                    leaf_lsystem = leaf.expand_lsystem(leaf_axiom, leaf_rules, iterations=6)
+                    leaf_mesh = leaf.create_leaf_geometry(leaf_lsystem, angle_deg=16, step_length=length/8)
             
                     if leaf_mesh:
                         leaf_pos = current_pos

@@ -1,5 +1,8 @@
 import trimesh
 import numpy as np
+import subprocess
+import platform
+import os
 from mpmath import mp
 
 import leafForBush
@@ -105,7 +108,7 @@ def rotate_direction_set(forward, up, right, angle_deg, axis):
     right = trimesh.transformations.transform_points([right], rotation)[0]
     return forward / np.linalg.norm(forward), up / np.linalg.norm(up), right / np.linalg.norm(right)
 
-def interpret_lsystem(lsys_string, start, direction, length, initial_radius, taper, angle_deg=28):
+def interpret_lsystem(lsys_string, start, direction, length, initial_radius, taper, berry_radius, angle_deg=28):
     meshes = []
     current_pos = np.array(start)
     current_forward = np.array(direction) / np.linalg.norm(direction)
@@ -193,25 +196,40 @@ def create_berry(position, radius):
     return sphere
 
 
-rules = {
-    'S': 'FFFA', 
-    'A': '[&&J][B]////[&&J][B]////[&&J]B',
-    'B': '&FFFAK'
-}
 
-axiom = 'S'
-lsystem = expand_lsystem(axiom, rules, iterations=10)
+    
+def generate_berry_bush(seed, iterations, length, initial_radius, berry_radius):
+    rules = {
+        'S': 'FFFA', 
+        'A': '[&&J][B]////[&&J][B]////[&&J]B',
+        'B': '&FFFAK'
+    }
 
-print("L-system for Berry bush:")
-print(lsystem)
-mesh = interpret_lsystem(
-    lsystem,
-    start=[0, 0, 0],
-    direction=[0, 0, 1],
-    length=3,
-    initial_radius=.2,
-    taper=1
-)
+    axiom = 'S'
+    lsystem = expand_lsystem(axiom, rules, iterations=iterations, seed=seed)
 
-mesh.export("generated_berry_bush.obj")
-print("L-System tree was generated in file generated_lsystem.obj")
+    print("L-system for Berry bush:")
+    print(lsystem)
+    mesh = interpret_lsystem(
+        lsystem,
+        start=[0, 0, 0],
+        direction=[0, 0, 1],
+        length=length,
+        initial_radius=initial_radius,
+        berry_radius=berry_radius,
+        taper=1
+    )
+
+    mesh.export("generated_lsystem.obj")
+    print("L-System tree was generated in file generated_lsystem.obj")
+    print("Number of polygons (triangles):", len(mesh.faces))
+
+    obj_path = "generated_lsystem.obj"
+
+    if platform.system() == 'Windows':
+        os.startfile(obj_path)
+    elif platform.system() == 'Darwin':
+        subprocess.run(['open', obj_path])
+    else:
+        subprocess.run(['xdg-open', obj_path])
+    
